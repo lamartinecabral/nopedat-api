@@ -1,0 +1,218 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Nopedat API",
+    "version": "1.0.0",
+    "description": "Netlify Edge Function API for reading and updating <a href=\"https://nopedat.web.app/\">Nopedat</a>."
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Same-origin deployment"
+    }
+  ],
+  "paths": {
+    "/api": {
+      "get": {
+        "summary": "Get note content",
+        "description": "Returns text content for a document by id. If the `image` query key is present, treats the stored text as a data URL and returns decoded binary image bytes.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Document id.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "subtype",
+            "in": "query",
+            "required": false,
+            "description": "Text subtype used in response `Content-Type` as `text/{subtype}`. Defaults to `plain`.",
+            "schema": {
+              "type": "string",
+              "default": "plain"
+            }
+          },
+          {
+            "name": "image",
+            "in": "query",
+            "required": false,
+            "description": "Presence-only flag. If present (for example `?image`), the API returns decoded binary image content instead of text.",
+            "schema": {
+              "type": "string"
+            },
+            "allowEmptyValue": true
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "description": "Bearer token forwarded to Firestore.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful read.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (for example, missing `id`).",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Method not allowed by this function.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Upstream or internal error.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Update note fields",
+        "description": "Updates one field on a Firestore document using the raw text request body.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Document id.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "field",
+            "in": "query",
+            "required": false,
+            "description": "Field to update. Defaults to `text`.",
+            "schema": {
+              "type": "string",
+              "enum": ["text", "protected", "public"],
+              "default": "text"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "description": "Bearer token forwarded to Firestore.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string"
+              },
+              "examples": {
+                "text": {
+                  "summary": "Document text",
+                  "value": "hello world"
+                },
+                "protected": {
+                  "summary": "For `field=protected`. The Authorization header is required in this case.",
+                  "value": "bm90ZXBhZG9ubGluZQ"
+                },
+                "public": {
+                  "summary": "For `field=public`, any non-empty value and not 'false' is interpreted as true. The Authorization header is required in this case.",
+                  "value": "true"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update accepted.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Method not allowed by this function.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Upstream or internal error.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "options": {
+        "summary": "CORS preflight",
+        "responses": {
+          "200": {
+            "description": "CORS preflight response.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
