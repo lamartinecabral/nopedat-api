@@ -16,17 +16,11 @@
       src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js"
       crossorigin
     ></script>
-    <script
-      src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-standalone-preset.js"
-      crossorigin
-    ></script>
     <script>
       window.onload = () => {
         window.ui = SwaggerUIBundle({
-          url: "./openapi.json",
+          url: `${window.location.origin}/openapi.json`,
           dom_id: "#swagger-ui",
-          presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
-          layout: "StandaloneLayout",
         });
       };
     </script>
