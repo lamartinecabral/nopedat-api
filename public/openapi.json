@@ -5,12 +5,6 @@
     "version": "1.0.0",
     "description": "Netlify Edge Function API for reading and updating <a href=\"https://nopedat.web.app/\">Nopedat</a>."
   },
-  "servers": [
-    {
-      "url": "/",
-      "description": "Same-origin deployment"
-    }
-  ],
   "paths": {
     "/api": {
       "get": {
