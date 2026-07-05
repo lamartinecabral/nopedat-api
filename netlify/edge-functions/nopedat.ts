@@ -5,10 +5,20 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Authorization",
 };
 
+function firebaseProjectId() {
+  const projectId = Netlify.env.get("FIREBASE_PROJECT_ID");
+  if (!projectId)
+    throw {
+      message: "Missing FIREBASE_PROJECT_ID",
+      code: 500,
+    };
+  return projectId;
+}
+
 function firestoreApiUrl(id: string) {
   return new URL(
     "https://firestore.googleapis.com/v1/" +
-      "projects/lamart-notepad/databases/(default)/documents/docs/" +
+      `projects/${firebaseProjectId()}/databases/(default)/documents/docs/` +
       id,
   );
 }

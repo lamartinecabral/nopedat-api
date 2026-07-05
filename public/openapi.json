@@ -6,6 +6,236 @@
     "description": "Netlify Edge Function API for reading and updating <a href=\"https://nopedat.web.app/\">Nopedat</a>."
   },
   "paths": {
+    "/auth/signup": {
+      "post": {
+        "summary": "Create account with email and password",
+        "description": "Creates a Firebase Auth account and triggers a verification email for the new user before returning the auth token payload.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthEmailPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Firebase sign-up response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FirebaseAuthSuccess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or JSON payload."
+          },
+          "403": {
+            "description": "Forbidden by upstream auth policy.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FirebaseAuthError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Missing configuration or internal error."
+          }
+        }
+      },
+      "options": {
+        "summary": "CORS preflight",
+        "responses": {
+          "200": {
+            "description": "CORS preflight response."
+          }
+        }
+      }
+    },
+    "/auth/signin": {
+      "post": {
+        "summary": "Sign in with email and password",
+        "description": "Signs in with Firebase email/password auth, then rejects the session unless the account email is already verified.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthEmailPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Firebase sign-in response for a verified account.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FirebaseSignInSuccess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or JSON payload."
+          },
+          "403": {
+            "description": "Email is not verified.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "email not verified"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Missing configuration or internal error."
+          }
+        }
+      },
+      "options": {
+        "summary": "CORS preflight",
+        "responses": {
+          "200": {
+            "description": "CORS preflight response."
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "summary": "Exchange a refresh token for new Firebase tokens",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Firebase token refresh response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FirebaseRefreshSuccess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body, JSON payload, or missing refresh token."
+          },
+          "500": {
+            "description": "Missing configuration or internal error."
+          }
+        }
+      },
+      "options": {
+        "summary": "CORS preflight",
+        "responses": {
+          "200": {
+            "description": "CORS preflight response."
+          }
+        }
+      }
+    },
+    "/auth/password": {
+      "post": {
+        "summary": "Sign in or sign up with docId and password",
+        "description": "Builds a synthetic email as `{docId}@notepade.web.app`, then signs in. If the account does not exist, it creates one with the same credentials.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthDocPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Firebase auth response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FirebaseAuthSuccess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or JSON payload."
+          },
+          "500": {
+            "description": "Missing configuration or internal error."
+          }
+        }
+      },
+      "options": {
+        "summary": "CORS preflight",
+        "responses": {
+          "200": {
+            "description": "CORS preflight response."
+          }
+        }
+      }
+    },
+    "/auth/update": {
+      "post": {
+        "summary": "Update a user's password",
+        "description": "Changes the authenticated user's password either by re-authenticating with `email`/`id` and `oldPassword` or by providing a valid Firebase ID token in `validToken`.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthUpdatePasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Firebase password update response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FirebaseAuthSuccess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body, JSON payload, or missing required password update fields."
+          },
+          "500": {
+            "description": "Missing configuration or internal error."
+          }
+        }
+      },
+      "options": {
+        "summary": "CORS preflight",
+        "responses": {
+          "200": {
+            "description": "CORS preflight response."
+          }
+        }
+      }
+    },
     "/api": {
       "get": {
         "summary": "Get note content",
@@ -202,6 +432,202 @@
                   "type": "string",
                   "example": "ok"
                 }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuthEmailPasswordRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "AuthDocPasswordRequest": {
+        "type": "object",
+        "required": ["id", "password"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "AuthUpdatePasswordRequest": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": ["email", "oldPassword", "newPassword"],
+            "properties": {
+              "email": {
+                "type": "string",
+                "format": "email"
+              },
+              "oldPassword": {
+                "type": "string"
+              },
+              "newPassword": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["id", "oldPassword", "newPassword"],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "oldPassword": {
+                "type": "string"
+              },
+              "newPassword": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["validToken", "newPassword"],
+            "properties": {
+              "validToken": {
+                "type": "string",
+                "description": "A valid Firebase ID token for the user whose password should be changed."
+              },
+              "newPassword": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "RefreshTokenRequest": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "Camel-case alias accepted by this endpoint."
+          },
+          "refresh_token": {
+            "type": "string",
+            "description": "Firebase-compatible snake-case alias accepted by this endpoint."
+          }
+        },
+        "anyOf": [
+          {
+            "required": ["refreshToken"]
+          },
+          {
+            "required": ["refresh_token"]
+          }
+        ]
+      },
+      "FirebaseAuthSuccess": {
+        "type": "object",
+        "required": [
+          "idToken",
+          "email",
+          "refreshToken",
+          "expiresIn",
+          "localId"
+        ],
+        "properties": {
+          "idToken": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "refreshToken": {
+            "type": "string"
+          },
+          "expiresIn": {
+            "type": "string",
+            "description": "Token lifetime in seconds."
+          },
+          "localId": {
+            "type": "string"
+          },
+          "registered": {
+            "type": "boolean",
+            "description": "Present on Firebase sign-in responses."
+          }
+        }
+      },
+      "FirebaseSignInSuccess": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/FirebaseAuthSuccess"
+          },
+          {
+            "type": "object",
+            "required": ["registered"],
+            "properties": {
+              "registered": {
+                "type": "boolean"
+              }
+            }
+          }
+        ]
+      },
+      "FirebaseRefreshSuccess": {
+        "type": "object",
+        "required": [
+          "expires_in",
+          "token_type",
+          "refresh_token",
+          "id_token",
+          "user_id",
+          "project_id"
+        ],
+        "properties": {
+          "expires_in": {
+            "type": "string",
+            "description": "Token lifetime in seconds."
+          },
+          "token_type": {
+            "type": "string",
+            "example": "Bearer"
+          },
+          "refresh_token": {
+            "type": "string"
+          },
+          "id_token": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "project_id": {
+            "type": "string"
+          }
+        }
+      },
+      "FirebaseAuthError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "message": {
+                "type": "string"
               }
             }
           }
