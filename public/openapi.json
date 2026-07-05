@@ -3,7 +3,7 @@
   "info": {
     "title": "Nopedat API",
     "version": "1.0.0",
-    "description": "Netlify Edge Function API for reading and updating <a href=\"https://nopedat.web.app/\">Nopedat</a>."
+    "description": "Netlify Edge Function API for the <a href=\"https://nopedat.web.app/\">Nopedat web app</a>, used for reading and updating notes plus authentication flows."
   },
   "paths": {
     "/auth/signup": {

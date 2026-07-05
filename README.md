@@ -1,5 +1,9 @@
 # nopedat
 
+API backend for the Nopedat web app: https://nopedat.web.app
+
+This repository hosts the Netlify API used by the notepad app for document reads, writes, and authentication flows.
+
 using Node.js
 ```javascript
 // GET example to read a note

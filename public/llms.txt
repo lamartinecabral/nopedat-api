@@ -1,0 +1,50 @@
+# Nopedat API
+
+> Netlify-hosted API for reading and updating Nopedat documents for the Nopedat web app, plus Firebase-backed authentication helpers.
+
+Primary app: https://nopedat.web.app
+
+Base URL: https://nopedat.netlify.app
+
+Primary docs:
+- Interactive API docs: https://nopedat.netlify.app/
+- OpenAPI spec: https://nopedat.netlify.app/openapi.json
+- Example note read URL: https://nopedat.netlify.app/api?id={note_id}
+
+## Core note API
+
+- GET /api?id={id}
+  Returns the document text as plain text.
+
+- POST /api?id={id}
+  Writes the raw request body to the document's text field.
+
+## Auth API
+
+- POST /auth/signup
+  Create an email/password account and trigger verification email.
+
+- POST /auth/signin
+  Sign in with email/password. Rejects unverified accounts.
+
+- POST /auth/refresh
+  Exchange a refresh token for new Firebase tokens.
+
+- POST /auth/password
+  Sign in or sign up using a document id plus password.
+
+- POST /auth/update
+  Update a user's password using either existing credentials or a valid Firebase ID token.
+
+## Request patterns
+
+- Note writes use a raw text/plain request body rather than JSON.
+- Auth endpoints use JSON request bodies.
+- Authorization may be passed as a Bearer token header to note and auth update flows.
+- CORS preflight is supported on all documented endpoints.
+
+## Recommended source of truth
+
+Use the OpenAPI document at /openapi.json for exact request and response schemas. Use this file as a short routing guide only.
+
+If you need the user-facing product context, start from the Nopedat web app at https://nopedat.web.app and treat this API as its backend service.
