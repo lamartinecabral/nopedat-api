@@ -1,6 +1,7 @@
-# nopedat
+# Nopedat API
 
 API backend for the Nopedat web app: https://nopedat.web.app
+Frontend codebase for the hosted app: https://github.com/lamartinecabral/nopedat
 
 This repository hosts the Netlify API used by the notepad app for document reads, writes, and authentication flows.
 
