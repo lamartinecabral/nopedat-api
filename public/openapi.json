@@ -250,28 +250,8 @@
       ],
       "get": {
         "summary": "Get note content",
-        "description": "Returns text content for a document by id. If the `image` query key is present, treats the stored text as a data URL and returns decoded binary image bytes.",
+        "description": "Returns text content for a document by id.",
         "parameters": [
-          {
-            "name": "subtype",
-            "in": "query",
-            "required": false,
-            "description": "Text subtype used in response `Content-Type` as `text/{subtype}`. Defaults to `plain`.",
-            "schema": {
-              "type": "string",
-              "default": "plain"
-            }
-          },
-          {
-            "name": "image",
-            "in": "query",
-            "required": false,
-            "description": "Presence-only flag. If present (for example `?image`), the API returns decoded binary image content instead of text.",
-            "schema": {
-              "type": "string"
-            },
-            "allowEmptyValue": true
-          },
           {
             "name": "Authorization",
             "in": "header",
@@ -289,12 +269,6 @@
               "text/plain": {
                 "schema": {
                   "type": "string"
-                }
-              },
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
                 }
               }
             }
