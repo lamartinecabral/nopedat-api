@@ -250,8 +250,19 @@
       ],
       "get": {
         "summary": "Get note content",
-        "description": "Returns text content for a document by id.",
+        "description": "Returns text content for a document by id. With `field=protected` or `field=public`, returns `true` when the field exists and `false` otherwise.",
         "parameters": [
+          {
+            "name": "field",
+            "in": "query",
+            "required": false,
+            "description": "Field to read. Defaults to `text`. `protected` and `public` return `true` when present and `false` when absent.",
+            "schema": {
+              "type": "string",
+              "enum": ["text", "protected", "public"],
+              "default": "text"
+            }
+          },
           {
             "name": "Authorization",
             "in": "header",

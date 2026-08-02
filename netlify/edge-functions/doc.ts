@@ -69,17 +69,30 @@ export default async (req: Request, context: Context) => {
 
   if (req.method === "GET") {
     const searchParams = new URL(req.url).searchParams;
+    const field = searchParams.get("field") || "text";
 
     try {
-      const text = await fetch(firestoreApiUrl(id), {
+      const document = await fetch(firestoreApiUrl(id), {
         method: "GET",
         headers: authHeader(req),
       })
         .then((a) => a.json())
         .then((a) => {
           if (a.error) throw a.error;
-          return a.fields.text.stringValue;
+          return a;
         });
+
+      if (field === "protected" || field === "public") {
+        const exists = Object.hasOwn(document.fields || {}, field);
+        return new Response(exists ? "true" : "false", {
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "text/plain; charset=utf-8",
+          },
+        });
+      }
+
+      const text = document.fields.text.stringValue;
 
       const isImage = searchParams.get("image") !== null;
       if (isImage) {
