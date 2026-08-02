@@ -313,7 +313,7 @@
             "name": "field",
             "in": "query",
             "required": false,
-            "description": "Field to update. Defaults to `text`.",
+            "description": "Field to update. Defaults to `text`. For `protected`, the raw request body must be `true` or `false`.",
             "schema": {
               "type": "string",
               "enum": ["text", "protected", "public"],
@@ -324,7 +324,7 @@
             "name": "Authorization",
             "in": "header",
             "required": false,
-            "description": "Bearer token forwarded to Firestore.",
+            "description": "Bearer token forwarded to Firestore. Required for `field=protected`.",
             "schema": {
               "type": "string"
             }
@@ -343,8 +343,8 @@
                   "value": "hello world"
                 },
                 "protected": {
-                  "summary": "For `field=protected`. The Authorization header is required in this case.",
-                  "value": "bm90ZXBhZG9ubGluZQ"
+                  "summary": "For `field=protected`, `true` stores the authenticated user's UID and `false` removes protection. The Authorization header is required.",
+                  "value": "true"
                 },
                 "public": {
                   "summary": "For `field=public`, any non-empty value and not 'false' is interpreted as true. The Authorization header is required in this case.",
@@ -362,6 +362,26 @@
                 "schema": {
                   "type": "string",
                   "example": "ok"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "For `field=protected`, the request body must be `true` or `false`.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Protected updates require a valid Bearer token.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }

@@ -1,4 +1,5 @@
 import type { Config, Context } from "@netlify/edge-functions";
+import { lookupAccount } from "./shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -23,11 +24,18 @@ function firestoreApiUrl(id: string) {
   );
 }
 
-function errorResponse(err: { code?: number; message?: string }) {
-  return new Response(err?.message || "Internal Error", {
-    headers: corsHeaders,
-    status: err?.code || 500,
-  });
+function errorResponse(err: unknown) {
+  const error =
+    typeof err === "object" && err !== null
+      ? (err as { code?: unknown; message?: unknown })
+      : {};
+  return new Response(
+    typeof error.message === "string" ? error.message : "Internal Error",
+    {
+      headers: corsHeaders,
+      status: typeof error.code === "number" ? error.code : 500,
+    },
+  );
 }
 
 function authHeader(req: Request) {
@@ -35,6 +43,18 @@ function authHeader(req: Request) {
   if (req.headers.has("Authorization"))
     headers["Authorization"] = req.headers.get("Authorization") as string;
   return headers;
+}
+
+async function authenticatedUserId(req: Request) {
+  const authorization = req.headers.get("Authorization");
+  const idToken = authorization?.match(/^Bearer\s+(.+)$/i)?.[1].trim();
+  if (!idToken) throw { message: "Unauthorized", code: 401 };
+
+  const account = await lookupAccount(idToken);
+  const userId = account.ok ? account.body.users[0]?.localId : undefined;
+  if (!userId) throw { message: "Unauthorized", code: 401 };
+
+  return userId;
 }
 
 export default async (req: Request, context: Context) => {
@@ -86,7 +106,7 @@ export default async (req: Request, context: Context) => {
           "Content-Type": `text/${subtype}; charset=utf-8`,
         },
       });
-    } catch (err: any) {
+    } catch (err) {
       return errorResponse(err);
     }
   }
@@ -106,8 +126,18 @@ export default async (req: Request, context: Context) => {
 
       fetchUrl.searchParams.set("updateMask.fieldPaths", field);
       if (field === "text") fetchBody.fields.text = { stringValue: text };
-      if (field === "protected")
-        if (text) fetchBody.fields.protected = { stringValue: text };
+      if (field === "protected") {
+        if (text !== "true" && text !== "false")
+          return errorResponse({
+            message: "protected field must be true or false",
+            code: 400,
+          });
+        const userId = await authenticatedUserId(req);
+        if (text === "true")
+          fetchBody.fields.protected = {
+            stringValue: userId,
+          };
+      }
       if (field === "public")
         if (text) fetchBody.fields.public = { booleanValue: !!text };
 
@@ -122,7 +152,7 @@ export default async (req: Request, context: Context) => {
         });
 
       return new Response("ok", { headers: corsHeaders });
-    } catch (err: any) {
+    } catch (err) {
       return errorResponse(err);
     }
   }
