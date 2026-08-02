@@ -138,8 +138,14 @@ export default async (req: Request, context: Context) => {
             stringValue: userId,
           };
       }
-      if (field === "public")
-        if (text) fetchBody.fields.public = { booleanValue: !!text };
+      if (field === "public") {
+        if (text !== "true" && text !== "false")
+          return errorResponse({
+            message: "public field must be true or false",
+            code: 400,
+          });
+        if (text === "true") fetchBody.fields.public = { booleanValue: true };
+      }
 
       await fetch(fetchUrl, {
         method: "PATCH",

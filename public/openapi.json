@@ -313,7 +313,7 @@
             "name": "field",
             "in": "query",
             "required": false,
-            "description": "Field to update. Defaults to `text`. For `protected`, the raw request body must be `true` or `false`.",
+            "description": "Field to update. Defaults to `text`. For `protected` or `public`, the raw request body must be `true` or `false`.",
             "schema": {
               "type": "string",
               "enum": ["text", "protected", "public"],
@@ -347,7 +347,7 @@
                   "value": "true"
                 },
                 "public": {
-                  "summary": "For `field=public`, any non-empty value and not 'false' is interpreted as true. The Authorization header is required in this case.",
+                  "summary": "For `field=public`, `true` makes the document public and `false` makes it private.",
                   "value": "true"
                 }
               }
@@ -367,7 +367,7 @@
             }
           },
           "400": {
-            "description": "For `field=protected`, the request body must be `true` or `false`.",
+            "description": "For `field=protected` or `field=public`, the request body must be `true` or `false`.",
             "content": {
               "text/plain": {
                 "schema": {
