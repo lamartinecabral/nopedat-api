@@ -236,20 +236,22 @@
         }
       }
     },
-    "/api": {
+    "/doc/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "Document id.",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
       "get": {
         "summary": "Get note content",
         "description": "Returns text content for a document by id. If the `image` query key is present, treats the stored text as a data URL and returns decoded binary image bytes.",
         "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "required": true,
-            "description": "Document id.",
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "subtype",
             "in": "query",
@@ -298,7 +300,7 @@
             }
           },
           "400": {
-            "description": "Bad Request (for example, missing `id`).",
+            "description": "Bad Request.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -333,15 +335,6 @@
         "summary": "Update note fields",
         "description": "Updates one field on a Firestore document using the raw text request body.",
         "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "required": true,
-            "description": "Document id.",
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "field",
             "in": "query",

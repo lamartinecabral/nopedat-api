@@ -9,14 +9,14 @@ Base URL: https://nopedat.netlify.app
 Primary docs:
 - Interactive API docs: https://nopedat.netlify.app/
 - OpenAPI spec: https://nopedat.netlify.app/openapi.json
-- Example note read URL: https://nopedat.netlify.app/api?id={note_id}
+- Example note read URL: https://nopedat.netlify.app/doc/{note_id}
 
 ## Core note API
 
-- GET /api?id={id}
+- GET /doc/{id}
   Returns the document text as plain text.
 
-- POST /api?id={id}
+- POST /doc/{id}
   Writes the raw request body to the document's text field.
 
 ## Auth API

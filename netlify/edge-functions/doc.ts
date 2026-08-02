@@ -1,4 +1,4 @@
-import type { Config } from "@netlify/edge-functions";
+import type { Config, Context } from "@netlify/edge-functions";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -37,16 +37,18 @@ function authHeader(req: Request) {
   return headers;
 }
 
-export default async (req: Request) => {
+export default async (req: Request, context: Context) => {
+  const id = context.params.id;
+
   // This is needed if you're planning to invoke your function from a browser.
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  if (!id) return errorResponse({ message: "Bad Request", code: 400 });
+
   if (req.method === "GET") {
     const searchParams = new URL(req.url).searchParams;
-    const id = searchParams.get("id");
-    if (!id) return errorResponse({ message: "Bad Request", code: 400 });
 
     try {
       const text = await fetch(firestoreApiUrl(id), {
@@ -90,7 +92,6 @@ export default async (req: Request) => {
   }
 
   if (req.method === "POST") {
-    const id = new URL(req.url).searchParams.get("id") || "";
     const field = new URL(req.url).searchParams.get("field") || "text";
     const text = await req.text();
     try {
@@ -129,4 +130,4 @@ export default async (req: Request) => {
   return errorResponse({ message: "invalid method", code: 403 });
 };
 
-export const config: Config = { path: "/api" };
+export const config: Config = { path: "/doc/:id" };
