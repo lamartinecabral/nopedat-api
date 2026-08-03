@@ -48,14 +48,6 @@
             "description": "Missing configuration or internal error."
           }
         }
-      },
-      "options": {
-        "summary": "CORS preflight",
-        "responses": {
-          "200": {
-            "description": "CORS preflight response."
-          }
-        }
       }
     },
     "/auth/signin": {
@@ -101,14 +93,6 @@
             "description": "Missing configuration or internal error."
           }
         }
-      },
-      "options": {
-        "summary": "CORS preflight",
-        "responses": {
-          "200": {
-            "description": "CORS preflight response."
-          }
-        }
       }
     },
     "/auth/refresh": {
@@ -140,14 +124,6 @@
           },
           "500": {
             "description": "Missing configuration or internal error."
-          }
-        }
-      },
-      "options": {
-        "summary": "CORS preflight",
-        "responses": {
-          "200": {
-            "description": "CORS preflight response."
           }
         }
       }
@@ -184,14 +160,6 @@
             "description": "Missing configuration or internal error."
           }
         }
-      },
-      "options": {
-        "summary": "CORS preflight",
-        "responses": {
-          "200": {
-            "description": "CORS preflight response."
-          }
-        }
       }
     },
     "/auth/update": {
@@ -224,14 +192,6 @@
           },
           "500": {
             "description": "Missing configuration or internal error."
-          }
-        }
-      },
-      "options": {
-        "summary": "CORS preflight",
-        "responses": {
-          "200": {
-            "description": "CORS preflight response."
           }
         }
       }
@@ -413,22 +373,6 @@
               "text/plain": {
                 "schema": {
                   "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "options": {
-        "summary": "CORS preflight",
-        "responses": {
-          "200": {
-            "description": "CORS preflight response.",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string",
-                  "example": "ok"
                 }
               }
             }
