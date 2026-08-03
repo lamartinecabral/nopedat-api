@@ -3,11 +3,10 @@ import {
   corsHeaders,
   errorResponse,
   firebaseApiKey,
-  FirebaseResponse,
-  JsonObject,
   readJsonBody,
   responseFromFirebase,
 } from "./shared/auth.ts";
+import type { FirebaseResponse } from "./shared/auth.ts";
 
 type FirebaseRefreshResponse = {
   expires_in: string; // The number of seconds in which the ID token expires.

@@ -1,6 +1,8 @@
 {
+  "type": "module",
   "scripts": {
-    "start": "netlify dev"
+    "start": "netlify dev",
+    "test": "node --test"
   },
   "devDependencies": {
     "netlify-cli": "27.0.1"

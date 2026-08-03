@@ -43,7 +43,7 @@ type FirebaseUpdatePasswordResponse = {
   expiresIn: string;
 };
 
-export type JsonObject = Record<string, unknown>;
+type JsonObject = Record<string, unknown>;
 
 export type FirebaseResponse = {
   ok: boolean;
